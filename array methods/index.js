@@ -63,8 +63,8 @@ let mySum = numbers.reduce((res, el) =>{
 })
 
 
-function getMax(nums){
-    let myMax = numbers.reduce((maxi, el) => {
+function getMax(nums = [undefined]){ //given  a default parameter
+    let myMax = nums.reduce((maxi, el) => {
         if(maxi < el){
             return el;
         }else{
