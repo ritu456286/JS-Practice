@@ -1,0 +1,7 @@
+{
+    "name": "Ritu",
+    "age": 23,
+    "city": "Delhi",
+    "isStudent" : true,
+    "courses": ["Maths", "Physics", "Hindi", "Science"] 
+}
