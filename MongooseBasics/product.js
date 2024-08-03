@@ -66,10 +66,18 @@ productSchema.methods.addCategory = function(newCategory){
     return this.save();
 }
 
+//this is a static method
+productSchema.statics.fireSale = function(){
+    console.log("updating products!");
+    return this.updateMany({}, {onSale: true, price: 0}); //we are updating all products
+    // return this.save(); //this is wrong[gives error] as save() is used to persist changes of DOCUMENT to the DB. Here it is a static method which will be applied to a model and not a document
+
+}
 
 const Product = mongoose.model('Product', productSchema);
 
 //this is not an instance method, it is a normal function to find a product
+
 const findProduct = async() =>{
     const foundProduct = await Product.findOne({name: "mountain bike new"});
     foundProduct.greet(); //this refers to the foundProduct;
@@ -79,7 +87,9 @@ const findProduct = async() =>{
     console.log(`added new category: ${foundProduct}`)
 }
 
-findProduct();
+// findProduct();
+
+Product.fireSale().then(res => console.log(res));
 // const bike = new Product({
 //     name: "Instance Bike",
 //     price: 999,
