@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
-
+const methodOverride = require("method-override");
 const Product = require("./models/product");
 
 mongoose.connect('mongodb://127.0.0.1:27017/farms')
@@ -17,6 +17,9 @@ mongoose.connect('mongodb://127.0.0.1:27017/farms')
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true}));
+app.use(methodOverride("_method")); //for put patch delete in forms
+
+const categories = ['fruit', 'vegetable', 'diary'];
 
 app.get('/', (req, res) => {
     res.send("HOME PAGE");
@@ -24,24 +27,48 @@ app.get('/', (req, res) => {
 
 //READ
 app.get('/products', async (req, res) => {
-    const products = await Product.find({});
-    // console.log(products);
-    res.render('products/index', { products });
+    const {category} = req.query;
+    if(category){
+        const products = await Product.find({category});
+        res.render('products/index', { products,category });
+    }else{
+        const products = await Product.find({});
+        res.render('products/index', { products, category: 'All' });
+    }
 })
 
 //CREATE: get form
 app.get('/products/new', (req, res) => {
-    res.render("products/new");
-    // res.send("new PAge");
+    res.render("products/new", {categories});
 });
 
 //READ
 app.get('/products/:id', async (req, res) => {
-    const { id } = req.params;
+    const { id } = req.params; 
     const product = await Product.findById(id);
     res.render('products/show', { product });
 })
 
+//UPDATE: form rendering
+app.get('/products/:id/edit', async (req, res) =>{
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    res.render('products/edit', { product, categories });
+})
+
+//UPDATE
+app.patch('/products/:id', async (req, res)=>{
+    const { id }= req.params;
+    const newProduct = await Product.findByIdAndUpdate(id, req.body, { runValidators: true, new: true });
+    res.redirect(`/products/${newProduct._id}`);
+})
+
+app.delete('/products/:id', async(req, res) =>{
+    const { id } = req.params;
+    const deletedProduct = await Product.findByIdAndDelete(id, {runValidators: true, new: true});
+    console.log(deletedProduct);
+    res.redirect('/products');
+})
 
 app.post('/products', async (req, res) => {
     // console.log(req.body); //req.body will be undefined if not parsed with the help of a parser
@@ -59,6 +86,7 @@ app.post('/products', async (req, res) => {
     res.redirect(`/products/${newProduct._id}`);
     
 });
+
 
 
 app.listen(3000, () => {

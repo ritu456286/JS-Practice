@@ -10,9 +10,13 @@
     <p>
         <b> Name: </b> <%= product.name %> <br>
         <b> Price: </b> <%= product.price %> <br>
-        <b> Category: </b> <%= product.category %> <br>
-        <a href="/products">All Products</a>
+        <b> Category: </b> <a href="/products?category=<%= product.category %>"><%= product.category %> <br></a>
     </p>
+    <form method="post" action="/products/<%= product._id %>?_method=DELETE">
+        <button>Delete Product!</button>
+    </form>
+    <a href="/products">All Products</a>
+    <a href="/products/<%=product._id%>/edit">Edit Product</a>
 </body>
 </html>
 <!-- _id: new ObjectId('66ae5c7aeec972c5a0397f1f'),

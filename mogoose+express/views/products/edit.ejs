@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Product Details</title>
+</head>
+<body>
+    <h1>Update Product Details</h1>
+    <form method="post" action="/products/<%=product._id%>?_method=PATCH">
+
+        <label for="name">Enter updated name</label>
+        <input type="text" id="name" name="name" placeholder="<%=product.name%>">
+        <br>
+        <label for="price">Enter updated Price</label>
+        <input type="number" id="price" name="price" placeholder="<%=product.price%>">
+        <br>
+        <label for="category">Select updated category</label>
+        <select id="category" name="category">
+            <% for(let category of categories){%>
+            <option value="<%=category%>" <%= product.category === category ? 'selected' : ''%>> <%= category %></option>
+            <% } %>
+        </select>
+        <br>
+        <button>Apply Changes!</button>
+    </form>
+    <a href="/products">All Products</a>
+</body>
+</html>
