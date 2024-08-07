@@ -2,7 +2,9 @@ const express = require("express");
 //execute the server
 const app = express(); //app is an object with different methods
 const path = require("path");
+const redditData = require('./data.json');
 //define port number
+console.log(redditData);
 const port = 3000;
 
 //this runs whenever a user goes to the port 3000 -> that is making a request to the server 
@@ -32,9 +34,13 @@ app.get('/rand', (req, res) => {
 })
 
 app.get('/r/:subreddit', (req, res) => {
-    console.log(req.params);
-    const {subreddit} = req.params;
-    res.render("reddit", {smallReddit: subreddit});
+    const subreddit = req.params.subreddit;
+    const data = redditData[subreddit];
+    if(data){
+        res.render("reddit", {...data});
+    }else{
+        res.render('notfound', { subreddit });
+    }
 })
 
 app.get('/cats', (req, res) => {

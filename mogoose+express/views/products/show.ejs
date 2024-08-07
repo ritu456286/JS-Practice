@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Show Product Details</title>
-</head>
-<body>
+<%- layout('./layouts/boilerplate') %>
     <h1>Product Details</h1>
     <p>
         <b> Name: </b> <%= product.name %> <br>
@@ -17,9 +10,3 @@
     </form>
     <a href="/products">All Products</a>
     <a href="/products/<%=product._id%>/edit">Edit Product</a>
-</body>
-</html>
-<!-- _id: new ObjectId('66ae5c7aeec972c5a0397f1f'),
-name: 'Slim Lady Finger',
-price: 1,
-category: 'vegetable', -->

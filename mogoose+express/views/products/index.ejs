@@ -1,20 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Products</title>
-</head>
-<body>
-    <h1> <%= category.toUpperCase() %> PRODUCTS!</h1>
-    <ul>
-        <% for(let p of products){ %>
-            <li><%= p.name %></li> <a href= "/products/<%=p.id%>">Details</a>
-        <% } %>
-    </ul>
-    <% if(category.toUpperCase() != 'ALL') { %>
-        <a href="/products">All Products</a>
+<%- layout('./layouts/boilerplate') %>
+<h1> <%= category.toUpperCase() %> PRODUCTS!</h1>
+<ul>
+    <% for(let p of products){ %>
+        <li><%= p.name %></li> <a href= "/products/<%=p.id%>">Details</a>
     <% } %>
-    <a href="/products/new">Add Product</a>
-</body>
-</html>
+</ul>
+<% if(category.toUpperCase() != 'ALL') { %>
+    <a href="/products">All Products</a>
+<% } %>
+<a href="/products/new">Add Product</a>

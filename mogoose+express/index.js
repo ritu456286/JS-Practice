@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
+const engine = require('ejs-mate');
 const methodOverride = require("method-override");
 const Product = require("./models/product");
 
@@ -14,6 +15,9 @@ mongoose.connect('mongodb://127.0.0.1:27017/farms')
         console.log(e);
     })
 
+// use ejs-locals for all ejs templates:
+app.engine('ejs', engine);
+    
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true}));
