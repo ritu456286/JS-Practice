@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require("morgan");
+const AppError = require('./AppError');
 const app = express();
 
 app.use(morgan('tiny')); //will log HTTP requests everytime a new request is made
@@ -31,7 +32,9 @@ const verifyUser = (req, res, next) => {
     if(password === 'ritu'){
         next();
     }else{
-        res.send("sorry you need a password");
+        // res.send("sorry you need a password");
+        // throw new Error("Password is required!");
+        throw new AppError("Password is required", 401);
     }
 };
 
@@ -61,12 +64,28 @@ app.get('/dog', (req, res) =>{
     res.send("dog page");
 })
 
+app.get('/error', (req, res) => {
+    chicken.fly(); //this throws error, as chicken is not defined;
+})
 app.get("/secret", verifyUser, (req, res) => {
     res.send("My secret is revealed");
 })
 //this will only run if any of the routes is not matched, hence any response was not sent back (req-res cycle is not stopped)
 app.use((req, res) => {
     res.status(404).send("not found");
+})
+
+//error handling middleware - custom
+// app.use((err, req, res, next) => {
+//     console.log("ERORRRRR");
+//     console.log("*******");
+//     // res.send("oh no!1");
+//     next(err); //passes this error to next error handling middleware , here it would be the default express error handling middleware.
+// })
+
+app.use((err, req, res, next) => {
+    const {status = 500, message = "Something went wrong"} = err;
+    res.status(status).send(message);
 })
 
 app.listen(3000, () => {
