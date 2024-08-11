@@ -1,11 +1,14 @@
 const express = require("express");
-const app = express();
-const path = require("path");
-const mongoose = require("mongoose")
-const engine = require('ejs-mate');
 const methodOverride = require("method-override");
-const Product = require("./models/product");
+const engine = require('ejs-mate');
+const path = require("path");
 const AppError = require("./AppError");
+const mongoose = require("mongoose")
+
+const Product = require("./models/product");
+const Farm = require('./models/farm');
+
+const app = express();
 
 mongoose.connect('mongodb://127.0.0.1:27017/farms')
     .then(() => {
@@ -32,6 +35,48 @@ function wrapAsync(fn){
     }
 }
 
+/** FARM ROUTES*/
+app.get('/farms', async(req, res) => {
+    const allFarms = await Farm.find({});
+    res.render('farms/index', {allFarms});
+})
+
+app.get('/farms/:id', async (req, res) => {
+    const farm = await Farm.findById(req.params.id).populate('products');
+    res.render('farms/show', { farm });
+})
+
+app.get('/farms/new', (req, res) => {
+    res.render('farms/new');
+})
+
+//rendering the create form 
+app.get('/farms/:id/products/new', async (req, res) => {
+    const { id } = req.params;
+    const farm = await Farm.findById(id);
+    res.render('products/new', { categories, farm });
+})
+
+//two-way referencing
+app.post('/farms/:id/products', async (req, res) => {
+    const { id } = req.params;
+    const farm = await Farm.findById(id);
+    const product = await new Product(req.body);
+    farm.products.push(product);
+    product.farm = farm;
+    await product.save();
+    await farm.save();
+    res.redirect(`/farms/${id}`);
+})
+
+app.post('/farms', async (req, res) => {
+    const newFarm = await new Farm(req.body);
+    await newFarm.save();
+    res.redirect('/farms');
+})
+
+
+/** PRODUCT ROUTES*/
 app.get('/', (req, res) => {
     res.send("HOME PAGE");
 })
@@ -56,12 +101,11 @@ app.get('/products/new', (req, res) => {
 //READ
 app.get('/products/:id', wrapAsync(async (req, res, next) => {
     const { id } = req.params; 
-    const product = await Product.findById(id);
+    const product = await Product.findById(id).populate('farm', 'name');
     if(!product){
         throw new AppError("Couldn't find the product", 404);
     }
-    res.render('products/show', { product });
-    
+    res.render('products/show', { product });    
 }));
 
 //UPDATE: form rendering
@@ -88,7 +132,6 @@ app.patch('/products/:id', wrapAsync(async (req, res, next)=>{
 app.delete('/products/:id', wrapAsync(async(req, res) =>{
     const { id } = req.params;
     const deletedProduct = await Product.findByIdAndDelete(id, {runValidators: true, new: true});
-    console.log(deletedProduct);
     res.redirect('/products');
 }));
 
@@ -116,7 +159,7 @@ const handleValidationError = (err) => {
 }
 
 app.use((err, req, res, next) => {
-    console.log(err.name);
+    // console.log(err.name);
     if(err.name === "ValidationError") err = handleValidationError(err);
     next(err);
 })

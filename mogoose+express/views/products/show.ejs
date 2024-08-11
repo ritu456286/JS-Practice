@@ -3,10 +3,12 @@
     <p>
         <b> Name: </b> <%= product.name %> <br>
         <b> Price: </b> <%= product.price %> <br>
+        <% if(product.farm) {%>
+            <b> Farm: </b> <a href="/farms/<%=product.farm_id%>"><%= product.farm.name %></a><br>
+        <% } %>
         <b> Category: </b> <a href="/products?category=<%= product.category %>"><%= product.category %> <br></a>
     </p>
     <form method="post" action="/products/<%= product._id %>?_method=DELETE">
-        <button>Delete Product!</button>
+        <button class="btn btn-danger">Delete Product!</button>
     </form>
-    <a href="/products">All Products</a>
     <a href="/products/<%=product._id%>/edit">Edit Product</a>

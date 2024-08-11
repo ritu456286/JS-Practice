@@ -1,11 +1,13 @@
 <%- layout('./layouts/boilerplate') %>
-    <h1>Add Product</h1>
-    <form action="/products" method="post">
+    <h1><%= farm.name.toUpperCase() %></h1>
+    <hr>
+    <h3>Add Product</h3>
+    <form action="/farms/<%=farm._id%>/products" method="post">
         <label for="name">Enter Product Name: </label>
         <input type="text" id="name" name="name" placeholder="Product Name">
         <br>
         <label for="price">Enter Product Price: </label>
-        <input type="number" id="number" name="price" placeholder="Product Price">
+        <input type="number" id="price" name="price" placeholder="Product Price">
         <br>
         <label for="category">Enter Product Category: </label>
         <select name="category" id="category">
@@ -13,7 +15,8 @@
                 <option value="<%=category%>"><%=category%></option>
             <%}%>
         </select>
-        <br>
-        <button>Submit</button>
+        <br><br>
+        <button class="btn btn-success">Submit</button>
     </form>
-    <a href="/products">All Products</a>
+    <hr>
+    <a href="/farms/<%=farm.id%>">Back to Farm</a>

@@ -1,0 +1,7 @@
+<%- layout('./layouts/boilerplate') %>
+<h1> ALL FARMS!</h1>
+<ul>
+    <% for(let farm of allFarms){ %>
+        <li><a href="/farms/<%=farm._id%>"><%= farm.name %></a></li> 
+    <% } %>
+</ul>
