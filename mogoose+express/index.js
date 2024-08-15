@@ -5,6 +5,10 @@ const path = require("path");
 const AppError = require("./AppError");
 const mongoose = require("mongoose")
 
+const session = require('express-session');
+const flash = require('connect-flash');
+
+//models 
 const Product = require("./models/product");
 const Farm = require('./models/farm');
 
@@ -24,8 +28,18 @@ app.engine('ejs', engine);
     
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.use(express.urlencoded({ extended: true}));
+app.use(express.urlencoded({ extended: true})); //for parsing req.body
 app.use(methodOverride("_method")); //for put patch delete in forms
+
+app.use(session({secret: "thisismysecretkey", saveUninitialized: false, resave: false}));
+app.use(flash());
+
+
+//to get access to the flash message in a convinient manner on all the views ejs without explicitly passing that to the view,  we can use res.locals
+app.use((req, res, next) =>{
+    res.locals.messages = req.flash('success');
+    next();
+})
 
 const categories = ['fruit', 'vegetable', 'diary'];
 
@@ -39,15 +53,18 @@ function wrapAsync(fn){
 app.get('/farms', async(req, res) => {
     const allFarms = await Farm.find({});
     res.render('farms/index', {allFarms});
+    
 })
+
+//Create a new farm- form
+app.get('/farms/new', (req, res) => {
+    res.render('farms/new');
+})
+
 
 app.get('/farms/:id', async (req, res) => {
     const farm = await Farm.findById(req.params.id).populate('products');
     res.render('farms/show', { farm });
-})
-
-app.get('/farms/new', (req, res) => {
-    res.render('farms/new');
 })
 
 //rendering the create form 
@@ -69,11 +86,8 @@ app.post('/farms/:id/products', async (req, res) => {
     res.redirect(`/farms/${id}`);
 })
 
-app.post('/farms', async (req, res) => {
-    const newFarm = await new Farm(req.body);
-    await newFarm.save();
-    res.redirect('/farms');
-})
+
+
 
 
 /** PRODUCT ROUTES*/
@@ -152,6 +166,13 @@ app.post('/products', wrapAsync(async (req, res, next) => {
     res.redirect(`/products/${newProduct._id}`);
     
 }));
+
+app.post('/farms', async (req, res) => {
+    const newFarm = await new Farm(req.body);
+    await newFarm.save();
+    req.flash('success', 'successfully created a farm'); //category or key of msg to be stored in the session, the message value
+    res.redirect('/farms');
+})
 
 const handleValidationError = (err) => {
     console.log(err);
