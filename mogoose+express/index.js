@@ -1,6 +1,6 @@
 const express = require("express");
 const methodOverride = require("method-override");
-const engine = require('ejs-mate');
+const engine = require('ejs-mate'); //for boiler plates
 const path = require("path");
 const AppError = require("./AppError");
 const mongoose = require("mongoose")
